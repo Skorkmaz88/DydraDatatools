@@ -16,7 +16,7 @@ class StreamingDataSource(object):
         number_of_dimensions: An integer number of dimensions of each sample, supported 1-dimension only
         sampling_size       : An integer denotes number of sampled instance at each upload,
                               it is expected that upload data won't be hard real time
-        communication_type  : What protocol to be followed for uploading data
+        data_type           : FILE, HTTP_TEST_FILE, otherwise CONSOLE
         upload_type         : Format of data for upload protocol
         name                : Name for visualization and reporting purposes, e.g. sensor_name
         endpoint            : Communicaton endpoint
@@ -28,14 +28,14 @@ class StreamingDataSource(object):
     upload_frequency  = 1
     number_of_dimensions = 1
     number_of_sensors = 100
-    communication_type = 'HTTP'
+    data_type = ''
     upload_type = 'JSON'
     name = ''
     endpoint = ''
     path = ''
 
 
-    def __init__(self, name  = 'StreamingDataSensor', endpoint = 'http://localhost:5000/stream/api/v0.1', path = 'output.dat'):
+    def __init__(self, name  = 'StreamingDataSensor', endpoint = 'http://localhost:5000/stream/api/v0.1', path = 'output.dat', data_type='CONSOLE'):
         """Return a Customer object whose name is *name* and starting
         balance is *balance*."""
         self.name = name
@@ -70,10 +70,10 @@ class StreamingDataSource(object):
         #r = requests.post(self.endpoint,  json= bucket)
         # Push to the file
         #self.write('FILE', pair[0])
-        self.__write__('HTTP_TEST_FILE', pair)
+        self.__write__(pair)
 
 
-    def __write__(self,choice, data):
+    def __write__(self, data):
         """ Different create options:
              FILE: Grafana graph ready file for JSON
              HTTP_TEST_FILE: File format used in Dydra-HTTP-Test repository
@@ -83,7 +83,7 @@ class StreamingDataSource(object):
              MQTT: Push data points as MQTT payload as in N-QUAD
         """
 
-        if choice == 'FILE':
+        if data_type == 'FILE':
             append_write = ''
             loc = self.path
             if os.path.exists(loc):
@@ -96,7 +96,7 @@ class StreamingDataSource(object):
 
         # Generate static files for http test program
         # check: https://github.com/dydra/http-api-tests/tree/master/extensions/sparql-protocol/streams
-        elif choice == 'HTTP_TEST_FILE':
+        elif data_type == 'HTTP_TEST_FILE':
             append_write = ''
             loc = self.path
             if os.path.exists(loc):
@@ -121,7 +121,3 @@ class StreamingDataSource(object):
         timestamp = int(time.time()) * 1000
         data  = np.random.normal(mu, sigma, self.number_of_sensors)
         return data, timestamp
-# Run
-
-sds = StreamingDataSource()
-sds.start()

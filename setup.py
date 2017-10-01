@@ -12,5 +12,5 @@ classifiers=[
     'Programming Language :: Python :: 2.7',
 ],
 keywords='dydra machinelearningtools datagenerator data',
-install_requires=['numpy', ],
-python_requires='~=2.7',
+install_requires=['numpy', 'time', 'requests', 'codecs', 'json', 'os'],
+python_requires='~=2.7'
